@@ -7,6 +7,8 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import tatim.william.application.product.composition.dtos.ProductCompositionRequest;
 import tatim.william.application.product.composition.ProductCompositionService;
+import tatim.william.application.product.composition.dtos.QuantityRequiredRequest;
+
 
 import java.net.URI;
 
@@ -26,6 +28,17 @@ public class ProductCompositionController {
         URI location = URI.create("/products/" + productId + "/composition/"+ response.id());
 
         return Response.created(location).entity(response).build();
+    }
+
+    @PATCH
+    @Path("{id}")
+    public Response updateQuantityRequired(
+            @PathParam("id") Long id,
+            @Valid QuantityRequiredRequest dto
+    ){
+        var response = service.updateQuantityRequired(dto, id);
+
+        return Response.ok(response).build();
     }
 
 }
