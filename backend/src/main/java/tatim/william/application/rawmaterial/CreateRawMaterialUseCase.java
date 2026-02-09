@@ -28,7 +28,7 @@ public class CreateRawMaterialUseCase {
         for(int attempt = 1; attempt <= MAX_RETRIES; attempt ++){
             try {
                 var rawmaterial = mapper.toEntity(dto);
-                rawmaterial.setCode(generateCodeService.generate());
+                rawmaterial.setCode("MP-" +generateCodeService.generate());
                 repository.persist(rawmaterial);
                 return rawmaterial;
 

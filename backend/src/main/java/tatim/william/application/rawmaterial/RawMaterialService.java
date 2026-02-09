@@ -19,6 +19,11 @@ public class RawMaterialService {
     @Inject
     RawMaterialMapper mapper;
 
+    public RawMaterialResponse get(Long id){
+        var entity = getByIdOrThrow(id);
+        return mapper.toDto(entity);
+    }
+
     @Transactional
     public RawMaterialResponse update(RawMaterialRequest dto, Long id){
         var entity = getByIdOrThrow(id);

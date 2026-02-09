@@ -4,9 +4,12 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import lombok.Getter;
 import tatim.william.application.rawmaterial.CreateRawMaterialUseCase;
 import tatim.william.application.rawmaterial.RawMaterialService;
 import tatim.william.application.rawmaterial.dtos.RawMaterialRequest;
+
+import java.net.URI;
 
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
@@ -22,16 +25,25 @@ public class RawMaterialController {
         return Response.ok(service.list()).build();
     }
 
+    @GET
+    @Path("/{id}")
+    public Response get(@PathParam("id") Long id){
+        return Response.ok(service.get(id)).build();
+    }
+
     @POST
     public Response post(@Valid RawMaterialRequest dto){
-        return Response.ok(createService.create(dto)).build();
+        var entity = createService.create(dto);
+        URI location = URI.create("/raw-materials/" + entity.getId());
+
+        return Response.created(location).entity(entity).build();
     }
 
     @DELETE
     @Path("/{id}")
     public Response delete(@PathParam("id") Long id){
         service.delete(id);
-        return Response.ok().build();
+        return Response.noContent().build();
     }
 
     @PUT
@@ -42,4 +54,5 @@ public class RawMaterialController {
     ){
         return Response.ok(service.update(dto, id)).build();
     }
+
 }
