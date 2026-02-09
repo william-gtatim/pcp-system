@@ -11,6 +11,8 @@ import tatim.william.application.product.composition.dtos.QuantityRequiredReques
 import tatim.william.application.rawmaterial.RawMaterialService;
 import tatim.william.domain.product.ProductComposition;
 
+import java.util.List;
+
 @ApplicationScoped
 public class ProductCompositionService {
     @Inject
@@ -44,6 +46,16 @@ public class ProductCompositionService {
         composition.setQuantityRequired(dto.quantityRequired());
         repository.persist(composition);
         return mapper.toDto(composition);
+    }
+
+    public List<ProductCompositionResponse> listProductCompositions(Long productId){
+        productService.getByIdOrThrow(productId);
+        var compositions = repository.findByProductIdWithMaterials(productId);
+
+        return compositions
+                .stream()
+                .map(mapper::toDto)
+                .toList();
     }
 
 

@@ -14,7 +14,7 @@ import java.net.URI;
 
 @Consumes(MediaType.APPLICATION_JSON)
 @Produces(MediaType.APPLICATION_JSON)
-@Path("/products/{productId}/composition")
+@Path("/products/{productId}/compositions")
 public class ProductCompositionController {
     @Inject
     ProductCompositionService service;
@@ -25,7 +25,7 @@ public class ProductCompositionController {
             @Valid ProductCompositionRequest dto
             ){
         var response = service.create(dto, productId);
-        URI location = URI.create("/products/" + productId + "/composition/"+ response.id());
+        URI location = URI.create("/products/" + productId + "/compositions/"+ response.id());
 
         return Response.created(location).entity(response).build();
     }
@@ -39,6 +39,11 @@ public class ProductCompositionController {
         var response = service.updateQuantityRequired(dto, id);
 
         return Response.ok(response).build();
+    }
+
+    @GET
+    public Response listProductComposition(@PathParam("productId") Long productId){
+        return Response.ok(service.listProductCompositions(productId)).build();
     }
 
 }

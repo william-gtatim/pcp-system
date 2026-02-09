@@ -7,8 +7,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 
 
 @QuarkusTest
@@ -64,7 +63,7 @@ class ProductCompositionControllerTest {
                                 }
                             """.formatted(rawMaterialId))
                         .when()
-                        .post("/products/{productId}/composition", productId)
+                        .post("/products/{productId}/compositions", productId)
                         .then()
                         .statusCode(201)
                         .extract()
@@ -86,7 +85,7 @@ class ProductCompositionControllerTest {
                 }
             """.formatted(rawMaterialId))
                     .when()
-                    .post("/products/{productId}/composition", productId)
+                    .post("/products/{productId}/compositions", productId)
                     .then()
                     .statusCode(201)
                     .body("id", notNullValue())
@@ -104,7 +103,7 @@ class ProductCompositionControllerTest {
                         }
                     """)
                     .when()
-                    .post("/products/{productId}/composition", productId)
+                    .post("/products/{productId}/compositions", productId)
                     .then()
                     .statusCode(422);
         }
@@ -138,13 +137,46 @@ class ProductCompositionControllerTest {
                         }
                         """)
                     .when()
-                    .patch("/products/{productId}/composition/{id}",productId, compositionId)
+                    .patch("/products/{productId}/compositions/{id}",productId, compositionId)
                     .then()
                     .statusCode(200)
                     .body("id", equalTo(compositionId.intValue()))
                     .body("rawMaterialId", equalTo(rawMaterialId.intValue()))
                     .body("rawMaterialName", equalTo("Matéria-Prima Teste"))
                     .body("quantityRequired", equalTo(3.5f));
+        }
+    }
+
+
+    @Nested
+    class ListProductComposition{
+
+        @Test
+        void shouldReturnAListOfCompositions(){
+            given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .get("/products/{productId}/compositions", productId)
+                    .then()
+                    .statusCode(200)
+                    .body("", not(empty()))
+                    .body("size()",equalTo(1))
+                    .body("[0].id", notNullValue())
+                    .body("[0].productId", equalTo(productId.intValue()))
+                    .body("[0].rawMaterialId", notNullValue())
+                    .body("[0].rawMaterialName", equalTo("Matéria-Prima Teste"))
+                    .body("[0].quantityRequired", equalTo(2.5f));
+        }
+
+        @Test
+        void shouldReturnNotFoundWhenProductNotExists(){
+            given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .get("/products/{productId}/compositions", 2L)
+                    .then()
+                    .statusCode(404);
+
         }
     }
 

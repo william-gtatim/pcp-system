@@ -5,6 +5,6 @@ public record ProductCompositionResponse(
         Long productId,
         Long rawMaterialId,
         String rawMaterialName,
-        float quantityRequired
+        Float quantityRequired
 ) {
 }
