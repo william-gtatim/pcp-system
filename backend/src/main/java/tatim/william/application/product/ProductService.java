@@ -4,16 +4,12 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
-import tatim.william.application.product.composition.ProductCompositionMapper;
-import tatim.william.application.product.composition.dtos.ProductCompositionResponse;
 import tatim.william.application.product.dtos.ProductRequest;
 import tatim.william.application.product.dtos.ProductResponse;
 import tatim.william.application.rawmaterial.RawMaterialService;
 import tatim.william.domain.product.Product;
 import tatim.william.domain.product.ProductComposition;
-import tatim.william.domain.rawmaterial.RawMaterial;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped

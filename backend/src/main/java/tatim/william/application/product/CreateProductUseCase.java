@@ -6,8 +6,6 @@ import jakarta.transaction.Transactional;
 import org.hibernate.exception.ConstraintViolationException;
 import tatim.william.application.DuplicatedeCodeException;
 import tatim.william.application.GenerateCodeService;
-import tatim.william.application.product.composition.ProductCompositionRepository;
-import tatim.william.application.product.composition.ProductCompositionService;
 import tatim.william.application.product.dtos.ProductRequest;
 import tatim.william.application.product.dtos.ProductResponse;
 import tatim.william.application.rawmaterial.RawMaterialService;

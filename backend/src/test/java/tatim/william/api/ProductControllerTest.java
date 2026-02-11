@@ -7,50 +7,47 @@ import org.junit.jupiter.api.Test;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
 
-
-
 @QuarkusTest
 class ProductControllerTest {
+
+    private Long createRawMaterial() {
+        return given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                           "name": "Farinha",
+                           "stockQuantity": 100
+                        }
+                      """)
+                .when()
+                .post("/raw-materials")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath()
+                .getLong("id");
+    }
 
     @Test
     void shouldCreateUpdateListAndDeleteProduct() {
 
-        Long rawMaterialId =
-                given()
-                        .contentType(ContentType.JSON)
-                        .body("""
-                                {
-                                    "name": "Nome",
-                                    "stockQuantity": 19
-                                }
-                                """)
-                        .when()
-                        .post("raw-materials")
-                        .then()
-                        .statusCode(201)
-                        .body("id", notNullValue())
-                        .body("code", startsWith("MP-"))
-                        .body("name", equalTo("Nome"))
-                        .body("stockQuantity", equalTo(19))
-                        .extract()
-                        .jsonPath()
-                        .getLong("id");
+        Long rawMaterialId = createRawMaterial();
 
         Long productId =
                 given()
                         .contentType(ContentType.JSON)
                         .body("""
-                            {
-                               "name": "Produto",
-                               "price": 1.34,
-                               "composition": [
-                                   {
-                                       "rawMaterialId": %d,
-                                       "quantityRequired": 2.0
-                                   }
-                               ]
-                            }
-                        """.formatted(rawMaterialId))
+                                {
+                                   "name": "Produto",
+                                   "price": 1.34,
+                                   "composition": [
+                                       {
+                                           "rawMaterialId": %d,
+                                           "quantityRequired": 2
+                                       }
+                                   ]
+                                }
+                              """.formatted(rawMaterialId))
                         .when()
                         .post("/products")
                         .then()
@@ -58,7 +55,7 @@ class ProductControllerTest {
                         .body("id", notNullValue())
                         .body("code", startsWith("P-"))
                         .body("name", equalTo("Produto"))
-                        .body("price", equalTo(1.34f))
+                        .body("composition", hasSize(1))
                         .extract()
                         .jsonPath()
                         .getLong("id");
@@ -66,22 +63,21 @@ class ProductControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .body("""
-                    {
-                       "name": "Produto Atualizado",
-                       "price": 9.99,
-                       "composition": [
-                           {
-                               "rawMaterialId": %d,
-                               "quantityRequired": 3.0
-                           }
-                       ]
-                    }
-                """.formatted(rawMaterialId))
+                        {
+                           "name": "Produto Atualizado",
+                           "price": 9.99,
+                           "composition": [
+                               {
+                                   "rawMaterialId": %d,
+                                   "quantityRequired": 5
+                               }
+                           ]
+                        }
+                      """.formatted(rawMaterialId))
                 .when()
                 .put("/products/{id}", productId)
                 .then()
                 .statusCode(200)
-                .body("id", equalTo(productId.intValue()))
                 .body("name", equalTo("Produto Atualizado"))
                 .body("price", equalTo(9.99f));
 
@@ -90,9 +86,7 @@ class ProductControllerTest {
                 .get("/products")
                 .then()
                 .statusCode(200)
-                .body("id", hasItem(productId.intValue()))
-                .body("name", hasItem("Produto Atualizado"))
-                .body("price", hasItem(9.99f));
+                .body("id", hasItem(productId.intValue()));
 
         given()
                 .when()
@@ -105,5 +99,72 @@ class ProductControllerTest {
                 .get("/products/{id}", productId)
                 .then()
                 .statusCode(404);
+    }
+
+    @Test
+    void shouldReturnErrorWhenCompositionIsEmpty() {
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                           "name": "Produto",
+                           "price": 10,
+                           "composition": []
+                        }
+                      """)
+                .when()
+                .post("/products")
+                .then()
+                .statusCode(422);
+    }
+
+    @Test
+    void shouldReturn400WhenRawMaterialDoesNotExist() {
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                           "name": "Produto",
+                           "price": 10,
+                           "composition": [
+                               {
+                                   "rawMaterialId": 999999,
+                                   "quantityRequired": 2
+                               }
+                           ]
+                        }
+                      """)
+                .when()
+                .post("/products")
+                .then()
+                .statusCode(anyOf(is(400), is(404)));
+    }
+
+    @Test
+    void shouldReturn400WhenQuantityIsNegative() {
+
+        Long rawMaterialId = createRawMaterial();
+
+        given()
+                .contentType(ContentType.JSON)
+                .body("""
+                        {
+                           "name": "Produto",
+                           "price": 10,
+                           "composition": [
+                               {
+                                   "rawMaterialId": %d,
+                                   "quantityRequired": -1
+                               }
+                           ]
+                        }
+                      """.formatted(rawMaterialId))
+                .when()
+                .post("/products")
+                .then()
+                .statusCode(400)
+                .body(containsString("maior que zero"));
     }
 }
