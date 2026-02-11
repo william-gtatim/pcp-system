@@ -38,7 +38,7 @@ public class RawMaterialService {
     }
 
     public List<RawMaterialResponse> list(){
-        var list = repository.findAll();
+        var list = repository.listAll();
         return list.stream().map(mapper::toDto).toList();
     }
 
