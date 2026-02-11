@@ -4,8 +4,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import tatim.william.application.product.ProductService;
 import tatim.william.application.rawmaterial.dtos.RawMaterialRequest;
 import tatim.william.application.rawmaterial.dtos.RawMaterialResponse;
+import tatim.william.domain.DomainException;
 import tatim.william.domain.rawmaterial.RawMaterial;
 
 import java.util.List;
@@ -18,6 +20,9 @@ public class RawMaterialService {
 
     @Inject
     RawMaterialMapper mapper;
+
+    @Inject
+    ProductService productService;
 
     public RawMaterialResponse get(Long id){
         var entity = getByIdOrThrow(id);
@@ -44,6 +49,9 @@ public class RawMaterialService {
     @Transactional
     public void delete(Long id){
         var entity = getByIdOrThrow(id);
+        if(productService.existsByRawMaterial(id)){
+            throw new DomainException("Essa matéria-prima é usada por produtos e não pode ser excluída");
+        }
         repository.delete(entity);
     }
 
