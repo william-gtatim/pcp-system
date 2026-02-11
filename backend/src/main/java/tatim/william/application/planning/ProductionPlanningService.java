@@ -28,7 +28,7 @@ public class ProductionPlanningService {
         Map<Product, Integer> production = new HashMap<>();
 
         for(Product product: products) {
-            for(ProductComposition pc : product.getCompositions()){
+            for(ProductComposition pc : product.getComposition()){
                 var required = pc.getQuantityRequired();
                 var availability = pc.getRawMaterial().getStockQuantity();
                 int pd = (int) Math.max(0, availability / required);

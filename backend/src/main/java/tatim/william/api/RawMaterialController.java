@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import lombok.Getter;
 import tatim.william.application.rawmaterial.CreateRawMaterialUseCase;
 import tatim.william.application.rawmaterial.RawMaterialService;
 import tatim.william.application.rawmaterial.dtos.RawMaterialRequest;

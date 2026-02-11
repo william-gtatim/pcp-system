@@ -6,8 +6,12 @@ import jakarta.transaction.Transactional;
 import org.hibernate.exception.ConstraintViolationException;
 import tatim.william.application.DuplicatedeCodeException;
 import tatim.william.application.GenerateCodeService;
+import tatim.william.application.product.composition.ProductCompositionRepository;
+import tatim.william.application.product.composition.ProductCompositionService;
 import tatim.william.application.product.dtos.ProductRequest;
 import tatim.william.application.product.dtos.ProductResponse;
+import tatim.william.application.rawmaterial.RawMaterialService;
+import tatim.william.domain.product.ProductComposition;
 
 @ApplicationScoped
 public class CreateProductUseCase {
@@ -17,6 +21,9 @@ public class CreateProductUseCase {
     ProductMapper mapper;
     @Inject
     GenerateCodeService codeService;
+
+    @Inject
+    RawMaterialService rawMaterialService;
 
     @Transactional
     public ProductResponse create(ProductRequest dto){
@@ -28,9 +35,22 @@ public class CreateProductUseCase {
             try {
                 var product = mapper.toEntity(dto);
                 product.setCode("P-" + codeService.generate());
+
+                for (var item : dto.composition()) {
+                    var rawMaterial = rawMaterialService.getByIdOrThrow(item.rawMaterialId());
+
+                    var composition = new ProductComposition();
+                    composition.setProduct(product);
+                    composition.setRawMaterial(rawMaterial);
+                    composition.setQuantityRequired(item.quantityRequired());
+
+                    product.getComposition().add(composition);
+                }
+
                 repository.persist(product);
 
                 return mapper.toDto(product);
+
 
             }catch (ConstraintViolationException e){
                 // retry on constraint violation

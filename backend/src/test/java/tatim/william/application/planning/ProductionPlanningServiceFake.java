@@ -78,7 +78,7 @@ public class ProductionPlanningServiceFake extends ProductService {
         for (var pc : compositions) {
             pc.setProduct(product);
         }
-        product.setCompositions(compositions);
+        product.setComposition(compositions);
 
         return product;
     }

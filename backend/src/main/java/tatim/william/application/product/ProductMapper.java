@@ -3,16 +3,18 @@ package tatim.william.application.product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import tatim.william.application.product.composition.ProductCompositionMapper;
 import tatim.william.application.product.dtos.ProductRequest;
 import tatim.william.application.product.dtos.ProductResponse;
 import tatim.william.domain.product.Product;
 
 
 
-@Mapper(componentModel = "cdi")
+@Mapper(componentModel = "jakarta", uses = ProductCompositionMapper.class)
 interface ProductMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "code", ignore = true)
+    @Mapping(target = "composition", ignore = true)
     Product toEntity(ProductRequest dto);
 
     ProductResponse toDto(Product entity);

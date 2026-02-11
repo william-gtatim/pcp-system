@@ -15,15 +15,42 @@ class ProductControllerTest {
     @Test
     void shouldCreateUpdateListAndDeleteProduct() {
 
-        Long productId =
+        Long rawMaterialId =
                 given()
                         .contentType(ContentType.JSON)
                         .body("""
                                 {
-                                   "name": "Produto",
-                                   "price": 1.34
+                                    "name": "Nome",
+                                    "stockQuantity": 19
                                 }
-                            """)
+                                """)
+                        .when()
+                        .post("raw-materials")
+                        .then()
+                        .statusCode(201)
+                        .body("id", notNullValue())
+                        .body("code", startsWith("MP-"))
+                        .body("name", equalTo("Nome"))
+                        .body("stockQuantity", equalTo(19))
+                        .extract()
+                        .jsonPath()
+                        .getLong("id");
+
+        Long productId =
+                given()
+                        .contentType(ContentType.JSON)
+                        .body("""
+                            {
+                               "name": "Produto",
+                               "price": 1.34,
+                               "composition": [
+                                   {
+                                       "rawMaterialId": %d,
+                                       "quantityRequired": 2.0
+                                   }
+                               ]
+                            }
+                        """.formatted(rawMaterialId))
                         .when()
                         .post("/products")
                         .then()
@@ -39,11 +66,17 @@ class ProductControllerTest {
         given()
                 .contentType(ContentType.JSON)
                 .body("""
-                {
-                   "name": "Produto Atualizado",
-                   "price": 9.99
-                }
-            """)
+                    {
+                       "name": "Produto Atualizado",
+                       "price": 9.99,
+                       "composition": [
+                           {
+                               "rawMaterialId": %d,
+                               "quantityRequired": 3.0
+                           }
+                       ]
+                    }
+                """.formatted(rawMaterialId))
                 .when()
                 .put("/products/{id}", productId)
                 .then()

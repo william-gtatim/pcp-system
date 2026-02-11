@@ -19,17 +19,6 @@ public class ProductCompositionController {
     @Inject
     ProductCompositionService service;
 
-    @POST
-    public Response create(
-            @PathParam("productId") Long productId,
-            @Valid ProductCompositionRequest dto
-            ){
-        var response = service.create(dto, productId);
-        URI location = URI.create("/products/" + productId + "/compositions/"+ response.id());
-
-        return Response.created(location).entity(response).build();
-    }
-
     @PATCH
     @Path("{id}")
     public Response updateQuantityRequired(
