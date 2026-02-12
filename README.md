@@ -1,78 +1,68 @@
-# pcp-system
+## Sistema de planjemaneto e controle de produção
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+Esse projeto é a resposta para um desafio técnico envolvendo o desenvolvimento de um sistema de planejamento e controle de produção que implementa as seguintes funcionalidades:
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+- Cadastro de matérias-primas, com infomrações como nome e quantidade disponível em estoque
+- Cadastro de produtos, com informações como preço, matérias-primas necessárias para sua produção e quantidade
+- Recomendação de produção otimizada para gerar o máximo de lucro possível considerando o estoque de matéria-prima disponível e o preço dos produtos
 
-## Running the application in dev mode
+## Tecnologias utilizadas
+### Backend
+- Java
+- Quarkus
+- Postegres
 
-You can run your application in dev mode that enables live coding using:
+### Frontend
+- React
+- Next.js
+- Componentes Shadcn
+- Tanstack query
 
-```shell script
-./mvnw quarkus:dev
+## Como rodar o backend
+
+Clone o repositório:
+
+```bash
+git clone git@github.com:william-gtatim/pcp-system-api.git
+cd pcp-system-api
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+Na pasta do projeto, execute o comando abaixo para subir o banco de dados PostgreSQL:
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
+```bash
+docker compose up -d
 ```
 
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
+Em seguida, rode a aplicação com o Quarkus:
 
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+```bash
+quarkus dev
 ```
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+## Como rodar o frontend
 
-## Creating a native executable
+Clone o repositório do frontend:
 
-You can create a native executable using:
-
-```shell script
-./mvnw package -Dnative
+```bash
+git clone git@github.com:william-gtatim/pcp-system-frontend.git
+cd pcp-system-frontend
 ```
 
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
+Instale as dependências:
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
+```bash
+npm install
 ```
 
-You can then execute your native executable with: `./target/pcp-system-1.0.0-SNAPSHOT-runner`
+Rode a aplicação:
 
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
+```bash
+npm run dev
+```
 
-## Related Guides
+### Importante
 
-- REST ([guide](https://quarkus.io/guides/rest)): A Jakarta REST implementation utilizing build time processing and Vert.x. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it.
-- REST Jackson ([guide](https://quarkus.io/guides/rest#json-serialisation)): Jackson serialization support for Quarkus REST. This extension is not compatible with the quarkus-resteasy extension, or any of the extensions that depend on it
-- Hibernate ORM with Panache ([guide](https://quarkus.io/guides/hibernate-orm-panache)): Simplify your persistence code for Hibernate ORM via the active record or the repository pattern
-- JDBC Driver - PostgreSQL ([guide](https://quarkus.io/guides/datasource)): Connect to the PostgreSQL database via JDBC
-
-## Provided Code
-
-### Hibernate ORM
-
-Create your first JPA entity
-
-[Related guide section...](https://quarkus.io/guides/hibernate-orm)
-
-[Related Hibernate with Panache section...](https://quarkus.io/guides/hibernate-orm-panache)
+- Certifique-se de que o backend esteja rodando em `http://localhost:8080`, ou ajuste a URL da api em `libs/apiClient`.
+- Garanta que o frontend esteja rodando em `http://localhost:3000` para evitar problemas de CORS.
 
 
-### REST
-
-Easily start your REST Web Services
-
-[Related guide section...](https://quarkus.io/guides/getting-started-reactive#reactive-jax-rs-resources)
